@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>养老待遇测算工具</title>
+    <style>*{box-sizing:border-box;margin:0;padding:0;font-family:'Microsoft YaHei',sans-serif}body{background-color:#f5f5f5;padding:20px;max-width:800px;margin:0 auto}.container{background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);padding:30px;margin-top:20px}h1{color:#2c3e50;text-align:center;margin-bottom:10px;padding-bottom:15px;border-bottom:2px solid #3498db}.form-group{margin:20px 0}label{display:block;margin-bottom:8px;color:#34495e;font-weight:bold}select,input{width:100%;padding:12px;border:2px solid #ddd;border-radius:5px;font-size:16px;transition:border-color 0.3s}select:focus,input:focus{border-color:#3498db;outline:none}.calc-btn{background:linear-gradient(135deg,#3498db,#2980b9);color:#fff;border:none;padding:15px;width:100%;border-radius:5px;font-size:18px;font-weight:bold;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;margin:20px 0}.calc-btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(52,152,219,0.3)}.calc-btn:active{transform:translateY(0)}.result-box{background:linear-gradient(135deg,#f8f9fa,#e9ecef);border-left:5px solid #2ecc71;padding:20px;border-radius:5px;margin-top:30px;display:none}.result-title{color:#27ae60;font-size:20px;margin-bottom:15px}.result-item{margin:10px 0;padding:8px 0;border-bottom:1px dashed #ddd}.result-label{color:#7f8c8d;display:inline-block;width:180px}.result-value{color:#2c3e50;font-weight:bold;font-size:18px}.highlight{color:#e74c3c;font-size:24px;text-align:center;padding:15px;background:#fff;border-radius:8px;margin:15px 0;border:2px solid #f1c40f}.note{background:#fff8e1;padding:15px;border-radius:5px;margin-top:20px;font-size:14px;color:#666;border-left:4px solid #f1c40f}@media(max-width:600px){.container{padding:15px}.result-label{width:140px}}</style>
+</head>
+<body>
+    <div class="container">
+        <h1>城乡居民养老保险待遇测算器</h1>
+        <div class="form-group"><label for="paymentLevel">选择缴费档次（元/年）：</label><select id="paymentLevel"><option value="300">300元/年</option><option value="400">400元/年</option><option value="500" selected>500元/年</option><option value="600">600元/年</option><option value="700">700元/年</option><option value="800">800元/年</option><option value="900">900元/年</option><option value="1000">1000元/年</option><option value="1500">1500元/年</option><option value="2000">2000元/年</option><option value="3000">3000元/年</option><option value="4000">4000元/年</option><option value="5000">5000元/年</option><option value="6000">6000元/年</option><option value="7000">7000元/年</option><option value="8000">8000元/年</option><option value="9000">9000元/年</option><option value="10000">10000元/年</option></select></div>
+        <div class="form-group"><label for="years">缴费年限（年）：</label><input type="number" id="years" min="1" max="50" value="15" placeholder="请输入缴费年限"></div>
+        <button class="calc-btn" onclick="calculate()">开始测算养老金</button>
+        <div class="result-box" id="resultBox">
+            <div class="result-title">测算结果</div>
+            <div class="result-item"><span class="result-label">选择的缴费档次：</span><span class="result-value" id="levelDisplay"></span></div>
+            <div class="result-item"><span class="result-label">缴费年限：</span><span class="result-value" id="yearsDisplay"></span></div>
+            <div class="result-item"><span class="result-label">个人缴费总额：</span><span class="result-value" id="totalPayment"></span></div>
+            <div class="result-item"><span class="result-label">政府补贴总额：</span><span class="result-value" id="totalSubsidy"></span></div>
+            <div class="result-item"><span class="result-label">个人账户总额：</span><span class="result-value" id="totalAccount"></span></div>
+            <div class="highlight">预计每月养老金待遇：<span id="monthlyPension"></span> 元</div>
+            <div class="note"><strong>测算说明：</strong><br>1. 计算公式：（缴费总额 + 补贴总额）÷ 139 + 174<br>2. 174元为当前基础养老金标准（各地可能不同）<br>3. 139为养老金计发月数（60岁退休）<br>4. 此测算为估算结果，实际待遇以社保部门核算为准</div>
+        </div>
+    </div>
+    <script>
+        const subsidyMap = {300:35,400:40,500:60,600:72,700:84,800:96,900:108,1000:120,1500:180,2000:240,3000:240,4000:240,5000:240,6000:240,7000:240,8000:240,9000:240,10000:240};
+        function calculate(){
+            const paymentLevel = parseInt(document.getElementById('paymentLevel').value);
+            const years = parseInt(document.getElementById('years').value);
+            const subsidy = paymentLevel >= 2000 ? 240 : subsidyMap[paymentLevel];
+            const totalPayment = paymentLevel * years;
+            const totalSubsidy = subsidy * years;
+            const totalAccount = totalPayment + totalSubsidy;
+            const monthlyPension = (totalAccount / 139 + 174).toFixed(2);
+            document.getElementById('levelDisplay').textContent = paymentLevel + '元/年';
+            document.getElementById('yearsDisplay').textContent = years + '年';
+            document.getElementById('totalPayment').textContent = totalPayment.toLocaleString() + '元';
+            document.getElementById('totalSubsidy').textContent = totalSubsidy.toLocaleString() + '元';
+            document.getElementById('totalAccount').textContent = totalAccount.toLocaleString() + '元';
+            document.getElementById('monthlyPension').textContent = monthlyPension;
+            document.getElementById('resultBox').style.display = 'block';
+            document.getElementById('resultBox').scrollIntoView({behavior:'smooth',block:'start'});
+        }
+        window.onload = calculate;
+        document.getElementById('paymentLevel').addEventListener('change', calculate);
+        document.getElementById('years').addEventListener('input', calculate);
+    </script>
+</body>
+</html>
